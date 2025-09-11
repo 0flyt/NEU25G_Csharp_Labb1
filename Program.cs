@@ -1,9 +1,11 @@
-﻿using System.Numerics;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Numerics;
 
-static string FindSequence(string numbers)
+static string[,] FindSequence(string numbers)
 {
     string foundSequences = "";
-    
+    string foundSequencesIndex = "";
+
     for (int i = 0; i < numbers.Length; i++)
     {
         if (!char.IsDigit(numbers[i]))
@@ -13,16 +15,19 @@ static string FindSequence(string numbers)
         {
             if (!char.IsDigit(numbers[j]))
                 continue;
-            
+
             if (numbers[i] == numbers[j] && i < j)
             {
                 string foundSequence = "";
+                string foundSequenceIndex = "";
                 for (int n = i; n <= j; n++)
                 {
                     foundSequence += numbers[n];
+                    foundSequenceIndex = i.ToString();
                     if (!char.IsDigit(numbers[n]))
                     {
                         foundSequence = "";
+                        foundSequenceIndex = "";
                         break;
                     }
 
@@ -33,83 +38,42 @@ static string FindSequence(string numbers)
                         foundSequences = foundSequence;
                     else
                         foundSequences += " " + foundSequence;
-                    
+
                 }
-                
+
+                if (foundSequenceIndex.Length > 0)
+                {
+                    if (foundSequencesIndex == "")
+                        foundSequencesIndex = foundSequenceIndex;
+                    else
+                        foundSequencesIndex += " " + foundSequenceIndex;
+
+                }
+
                 break;
             }
         }
     }
-    
-    return foundSequences;
+
+    string[] foundSequencesArray = foundSequences.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    string[] foundIndexArray = foundSequencesIndex.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    string[,] sequencesAndIndex = new string[foundSequencesArray.Length, 2];
+
+    for (int i = 0; i < foundSequencesArray.Length; i++)
+    {
+        sequencesAndIndex[i, 0] = foundSequencesArray[i];
+        sequencesAndIndex[i, 1] = foundIndexArray[i];
+    }
+
+    return sequencesAndIndex;
 }
 
-static string RemoveDuplicates(string foundSequences)
+static void MarkedSequence(string exampleNumbers, string[,] sequencesAndIndex)
 {
-    string[] inputSequences = foundSequences.Split(' ');
-    string[] outputSequences = new string[inputSequences.Length];
-    string removedDuplicates = "";
-
-    foreach (var sequence in inputSequences)
+    for (int s = 0; s < sequencesAndIndex.GetLength(0); s++)
     {
-        if (!outputSequences.Contains(sequence))
-        {
-            outputSequences = outputSequences.Append(sequence).ToArray();
-        }
-        
-    }
-
-    foreach (var item in outputSequences)
-    {
-        if (item != null)
-        {
-            if (removedDuplicates == "")
-            {
-                removedDuplicates = item;
-            }
-            else
-            {
-                removedDuplicates += " " + item;
-            }
-                
-        }
-    }
-
-    return removedDuplicates;
-
-}
-
-static int FindStartIndex(string sequence, string exampleNumbers)
-{
-        for (int i = 0; i < exampleNumbers.Length - sequence.Length + 1; i++)
-        {
-
-            bool found = true;
-
-            for (int j = 0; j < sequence.Length; j++)
-            {
-                
-                if (exampleNumbers[i + j] != sequence[j])
-                {
-                    found = false;
-                    break;
-                }
-             
-            }
-            if (found)
-                return i;
-
-
-        }
-    return -1;
-    }
-
-static void MarkedSequence(string exampleNumbers, string[] foundSequences)
-{
-    foreach (var sequence in foundSequences)
-    {
-        int startIndex = FindStartIndex(sequence, exampleNumbers);
-        int endIndex = startIndex + sequence.Length;
+        int startIndex = int.Parse(sequencesAndIndex[s,1]);
+        int endIndex = startIndex + sequencesAndIndex[s, 0].Length;
         string firstExampleNumbers = "";
         string lastExampleNumbers = "";
 
@@ -118,22 +82,24 @@ static void MarkedSequence(string exampleNumbers, string[] foundSequences)
 
         for (int j = endIndex; j < exampleNumbers.Length; j++)
             lastExampleNumbers += exampleNumbers[j];
-        
+
         Console.Write(firstExampleNumbers);
         Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.Write(sequence);
+        Console.Write(sequencesAndIndex[s,0]);
         Console.ForegroundColor = ConsoleColor.White;
         Console.WriteLine(lastExampleNumbers);
     }
-    
+
 }
 
-static BigInteger AddingNumbers(string[] foundSequences)
+static BigInteger AddingNumbers(string[,] foundSequences)
 {
     BigInteger total = 0;
 
-    foreach (var sequence in foundSequences)
-        total += BigInteger.Parse(sequence);
+    for (int i = 0; i < foundSequences.GetLength(0); i++)
+    {
+        total += BigInteger.Parse(foundSequences[i,0]);
+    }
 
     return total;
 }
@@ -145,7 +111,7 @@ string exampleNumbers = Console.ReadLine();
 
 Console.WriteLine();
 
-string[] foundSequences = RemoveDuplicates(FindSequence(exampleNumbers)).Split(' ');
+string[,] foundSequences = FindSequence(exampleNumbers);
 MarkedSequence(exampleNumbers, foundSequences);
 
 Console.WriteLine();
