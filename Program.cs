@@ -33,7 +33,7 @@ static string FindSequence(string numbers)
                         foundSequences = foundSequence;
                     else
                         foundSequences += " " + foundSequence;
-                        
+                    
                 }
                 
                 break;
@@ -42,6 +42,41 @@ static string FindSequence(string numbers)
     }
     
     return foundSequences;
+}
+
+static string RemoveDuplicates(string foundSequences)
+{
+    string[] inputSequences = foundSequences.Split(' ');
+    string[] outputSequences = new string[inputSequences.Length];
+    string removedDuplicates = "";
+
+    foreach (var sequence in inputSequences)
+    {
+        if (!outputSequences.Contains(sequence))
+        {
+            outputSequences = outputSequences.Append(sequence).ToArray();
+        }
+        
+    }
+
+    foreach (var item in outputSequences)
+    {
+        if (item != null)
+        {
+            if (removedDuplicates == "")
+            {
+                removedDuplicates = item;
+            }
+            else
+            {
+                removedDuplicates += " " + item;
+            }
+                
+        }
+    }
+
+    return removedDuplicates;
+
 }
 
 static int FindStartIndex(string sequence, string exampleNumbers)
@@ -104,11 +139,14 @@ static BigInteger AddingNumbers(string[] foundSequences)
 }
 
 Console.ForegroundColor = ConsoleColor.White;
+
 Console.Write("Skriv in text med olika tal: ");
 string exampleNumbers = Console.ReadLine();
+
 Console.WriteLine();
 
-string[] foundSequences = FindSequence(exampleNumbers).Split(' ');
+string[] foundSequences = RemoveDuplicates(FindSequence(exampleNumbers)).Split(' ');
 MarkedSequence(exampleNumbers, foundSequences);
+
 Console.WriteLine();
 Console.WriteLine($"Total: {AddingNumbers(foundSequences)}");
