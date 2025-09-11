@@ -1,10 +1,9 @@
-﻿string exampleNumbers = "29535123p48723487597645723645";
+﻿using System.Numerics;
 
 static string FindSequence(string numbers)
 {
     string foundSequences = "";
     
-
     for (int i = 0; i < numbers.Length; i++)
     {
         if (!char.IsDigit(numbers[i]))
@@ -31,13 +30,9 @@ static string FindSequence(string numbers)
                 if (foundSequence.Length > 0)
                 {
                     if (foundSequences == "")
-                    {
                         foundSequences = foundSequence;
-                    }
                     else
-                    {
                         foundSequences += " " + foundSequence;
-                    }
                         
                 }
                 
@@ -49,38 +44,71 @@ static string FindSequence(string numbers)
     return foundSequences;
 }
 
-static void MarkedSequences(string foundSequences)
+static int FindStartIndex(string sequence, string exampleNumbers)
 {
-    string exampleNumbers = "29535123p48723487597645723645";
-    string[] sequenceArray = foundSequences.Split(' ');
-
-    foreach (var sequence in sequenceArray)
-    {
-        int startIndex = exampleNumbers.IndexOf(sequence);
-
-        if (startIndex >= 0)
+        for (int i = 0; i < exampleNumbers.Length - sequence.Length + 1; i++)
         {
-            int endIndex = startIndex + sequence.Length - 1;
 
-            Console.WriteLine(startIndex + " " + endIndex);
+            bool found = true;
+
+            for (int j = 0; j < sequence.Length; j++)
+            {
+                
+                if (exampleNumbers[i + j] != sequence[j])
+                {
+                    found = false;
+                    break;
+                }
+             
+            }
+            if (found)
+                return i;
+
+
         }
-        
-        //for (int j = 0; j < exampleNumbers.Length; j++)
-        //{
-
-        //}
-        //string markedSequence = sequence;
-        ////Console.ForegroundColor = ConsoleColor.Magenta;
-        ////Console.Write($"{sequence}");
-        ////Console.ForegroundColor = ConsoleColor.White;
-        ////Console.Write("test");
-        //for (int i = sequence.Length; i < exampleNumbers.Length; i++)
-        //{
-        //    markedSequence += exampleNumbers[i];
-        //}
-        //Console.WriteLine(markedSequence);
+    return -1;
     }
+
+static void MarkedSequence(string exampleNumbers, string[] foundSequences)
+{
+    foreach (var sequence in foundSequences)
+    {
+        int startIndex = FindStartIndex(sequence, exampleNumbers);
+        int endIndex = startIndex + sequence.Length;
+        string firstExampleNumbers = "";
+        string lastExampleNumbers = "";
+
+        for (int i = 0; i < startIndex; i++)
+            firstExampleNumbers += exampleNumbers[i];
+
+        for (int j = endIndex; j < exampleNumbers.Length; j++)
+            lastExampleNumbers += exampleNumbers[j];
+        
+        Console.Write(firstExampleNumbers);
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.Write(sequence);
+        Console.ForegroundColor = ConsoleColor.White;
+        Console.WriteLine(lastExampleNumbers);
+    }
+    
 }
 
-//FindSequence(exampleNumbers);
-MarkedSequences(FindSequence(exampleNumbers));
+static BigInteger AddingNumbers(string[] foundSequences)
+{
+    BigInteger total = 0;
+
+    foreach (var sequence in foundSequences)
+        total += BigInteger.Parse(sequence);
+
+    return total;
+}
+
+Console.ForegroundColor = ConsoleColor.White;
+Console.Write("Skriv in text med olika tal: ");
+string exampleNumbers = Console.ReadLine();
+Console.WriteLine();
+
+string[] foundSequences = FindSequence(exampleNumbers).Split(' ');
+MarkedSequence(exampleNumbers, foundSequences);
+Console.WriteLine();
+Console.WriteLine($"Total: {AddingNumbers(foundSequences)}");
