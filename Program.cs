@@ -2,22 +2,22 @@
 string userInput = Console.ReadLine();
 FindStartAndEndIndex(userInput);
 
-static void FindStartAndEndIndex(string stringInput)
+static void FindStartAndEndIndex(string userInput)
 {
-    string startIndexs = "";
-    string endIndexs = "";
-    for (int i = 0; i < stringInput.Length; i++)
+    string allStartIndexes = "";
+    string allEndIndexes = "";
+    for (int i = 0; i < userInput.Length; i++)
     {
-        for (int j = i + 1; j < stringInput.Length; j++)
+        for (int j = i + 1; j < userInput.Length; j++)
         {
-            if (CorrectSequence(i, j, stringInput))
+            if (CorrectSequence(i, j, userInput))
             {
-                startIndexs += i + " ";
-                endIndexs += j + " ";
+                allStartIndexes += i + " ";
+                allEndIndexes += j + " ";
             }
         }
     }
-    Print(startIndexs, endIndexs, stringInput);
+    Print(allStartIndexes, allEndIndexes, userInput);
 }
 
 static bool CorrectSequence(int start, int end, string stringInput)
