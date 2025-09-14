@@ -1,4 +1,4 @@
-﻿Console.Write("Skriv en text: "); // 29535123p48723487597645723645
+﻿Console.Write("Skriv en text: "); //    29535123p48723487597645723645
 string userInput = Console.ReadLine();
 FindStartAndEndIndex(userInput);
 
