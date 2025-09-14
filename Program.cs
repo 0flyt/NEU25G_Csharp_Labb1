@@ -1,118 +1,64 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.Numerics;
+﻿Console.Write("Skriv en text: "); // 29535123p48723487597645723645
+string userInput = Console.ReadLine();
+FindStartAndEndIndex(userInput);
 
-static string[,] FindSequence(string numbers)
+static void FindStartAndEndIndex(string stringInput)
 {
-    string foundSequences = "";
-    string foundSequencesIndex = "";
-
-    for (int i = 0; i < numbers.Length; i++)
+    string startIndexs = "";
+    string endIndexs = "";
+    for (int i = 0; i < stringInput.Length; i++)
     {
-        if (!char.IsDigit(numbers[i]))
-            continue;
-
-        for (int j = 1; j < numbers.Length; j++)
+        for (int j = i + 1; j < stringInput.Length; j++)
         {
-            if (!char.IsDigit(numbers[j]))
-                continue;
-
-            if (numbers[i] == numbers[j] && i < j)
+            if (CorrectSequence(i, j, stringInput))
             {
-                string foundSequence = "";
-                string foundSequenceIndex = "";
-                for (int n = i; n <= j; n++)
-                {
-                    foundSequence += numbers[n];
-                    foundSequenceIndex = i.ToString();
-                    if (!char.IsDigit(numbers[n]))
-                    {
-                        foundSequence = "";
-                        foundSequenceIndex = "";
-                        break;
-                    }
-
-                }
-                if (foundSequence.Length > 0)
-                {
-                    if (foundSequences == "")
-                        foundSequences = foundSequence;
-                    else
-                        foundSequences += " " + foundSequence;
-
-                }
-
-                if (foundSequenceIndex.Length > 0)
-                {
-                    if (foundSequencesIndex == "")
-                        foundSequencesIndex = foundSequenceIndex;
-                    else
-                        foundSequencesIndex += " " + foundSequenceIndex;
-
-                }
-
-                break;
+                startIndexs += i + " ";
+                endIndexs += j + " ";
             }
         }
     }
-
-    string[] foundSequencesArray = foundSequences.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-    string[] foundIndexArray = foundSequencesIndex.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-    string[,] sequencesAndIndex = new string[foundSequencesArray.Length, 2];
-
-    for (int i = 0; i < foundSequencesArray.Length; i++)
-    {
-        sequencesAndIndex[i, 0] = foundSequencesArray[i];
-        sequencesAndIndex[i, 1] = foundIndexArray[i];
-    }
-
-    return sequencesAndIndex;
+    Print(startIndexs, endIndexs, stringInput);
 }
 
-static void MarkedSequence(string exampleNumbers, string[,] sequencesAndIndex)
+static bool CorrectSequence(int start, int end, string stringInput)
 {
-    for (int s = 0; s < sequencesAndIndex.GetLength(0); s++)
+    if (start < end && stringInput[start] == stringInput[end])
     {
-        int startIndex = int.Parse(sequencesAndIndex[s,1]);
-        int endIndex = startIndex + sequencesAndIndex[s, 0].Length;
-        string firstExampleNumbers = "";
-        string lastExampleNumbers = "";
-
-        for (int i = 0; i < startIndex; i++)
-            firstExampleNumbers += exampleNumbers[i];
-
-        for (int j = endIndex; j < exampleNumbers.Length; j++)
-            lastExampleNumbers += exampleNumbers[j];
-
-        Console.Write(firstExampleNumbers);
-        Console.ForegroundColor = ConsoleColor.Magenta;
-        Console.Write(sequencesAndIndex[s,0]);
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine(lastExampleNumbers);
+        string sequence = stringInput.Substring(start, end - start + 1);
+        if (!sequence.Any(char.IsLetter) && !sequence.Substring(1, sequence.Length - 2).Contains(stringInput[start]))
+            return true;
     }
-
+    return false;
 }
 
-static BigInteger AddingNumbers(string[,] foundSequences)
+static void Print(string start, string end, string stringInput)
 {
-    BigInteger total = 0;
+    int[] startIndex = start.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
+    int[] endIndex = end.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
 
-    for (int i = 0; i < foundSequences.GetLength(0); i++)
+    for (int i = 0; i < startIndex.Length; i++)
     {
-        total += BigInteger.Parse(foundSequences[i,0]);
-    }
+        for (int j = 0; j < stringInput.Length; j++)
+        {
+            bool isColor = false;
+            if (j >= startIndex[i] && j <= endIndex[i])
+                isColor = true;
 
-    return total;
+            Console.ForegroundColor = isColor ? ConsoleColor.Magenta : ConsoleColor.Gray;
+            Console.Write(stringInput[j]);
+        }
+        Console.ResetColor();
+        Console.WriteLine();
+        
+    }
+    AddSequencesForTotal(startIndex, endIndex, stringInput);
 }
 
-Console.ForegroundColor = ConsoleColor.White;
+static void AddSequencesForTotal(int[] startIndex, int[] endIndex, string stringInput)
+{
+    long total = 0;
+    for (int i = 0; i < startIndex.Length; i++)
+        total += long.Parse(stringInput.Substring(startIndex[i], endIndex[i] - startIndex[i] + 1));
 
-Console.Write("Skriv in text med olika tal: ");
-string exampleNumbers = Console.ReadLine();
-
-Console.WriteLine();
-
-string[,] foundSequences = FindSequence(exampleNumbers);
-MarkedSequence(exampleNumbers, foundSequences);
-
-Console.WriteLine();
-Console.WriteLine($"Total: {AddingNumbers(foundSequences)}");
+    Console.WriteLine($"\nTotal: {total}");
+}
