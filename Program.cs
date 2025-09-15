@@ -1,64 +1,57 @@
-﻿Console.Write("Skriv en text: "); //    29535123p48723487597645723645
+﻿using System;
+Console.Write("Skriv en text: "); //    29535123p48723487597645723645
 string userInput = Console.ReadLine();
-FindStartAndEndIndex(userInput);
-
-static void FindStartAndEndIndex(string userInput)
+List<(int, int)> startAndEndIndex = FindStartAndEndIndex(userInput);
+Print(startAndEndIndex, userInput);
+AddSequencesForTotal(startAndEndIndex, userInput);
+static List<(int, int)> FindStartAndEndIndex(string userInput)
 {
-    string allStartIndexes = "";
-    string allEndIndexes = "";
+    var indexes = new List<(int Start, int End)>();
+
     for (int i = 0; i < userInput.Length; i++)
     {
         for (int j = i + 1; j < userInput.Length; j++)
         {
             if (CorrectSequence(i, j, userInput))
-            {
-                allStartIndexes += i + " ";
-                allEndIndexes += j + " ";
-            }
+                indexes.Add((i, j));
         }
     }
-    Print(allStartIndexes, allEndIndexes, userInput);
+    return indexes;
 }
-
 static bool CorrectSequence(int start, int end, string stringInput)
 {
     if (start < end && stringInput[start] == stringInput[end])
     {
         string sequence = stringInput.Substring(start, end - start + 1);
-        if (!sequence.Any(char.IsLetter) && !sequence.Substring(1, sequence.Length - 2).Contains(stringInput[start]))
+        bool anyChar = sequence.Any(char.IsLetter);
+        bool containsSameNumber = sequence
+            .Substring(1, sequence.Length - 2)
+            .Contains(stringInput[start]);
+
+        if (!anyChar && !containsSameNumber)
             return true;
     }
     return false;
 }
-
-static void Print(string start, string end, string stringInput)
+static void Print(List<(int Start, int End)> startAndEndIndex, string stringInput)
 {
-    int[] startIndex = start.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-    int[] endIndex = end.Split(' ', StringSplitOptions.RemoveEmptyEntries).Select(int.Parse).ToArray();
-
-    for (int i = 0; i < startIndex.Length; i++)
+    foreach (var (Start, End) in startAndEndIndex)
     {
         for (int j = 0; j < stringInput.Length; j++)
         {
-            bool isColor = false;
-            if (j >= startIndex[i] && j <= endIndex[i])
-                isColor = true;
-
+            bool isColor = j >= Start && j <= End;
             Console.ForegroundColor = isColor ? ConsoleColor.Magenta : ConsoleColor.Gray;
             Console.Write(stringInput[j]);
         }
         Console.ResetColor();
         Console.WriteLine();
-        
     }
-    AddSequencesForTotal(startIndex, endIndex, stringInput);
 }
-
-static void AddSequencesForTotal(int[] startIndex, int[] endIndex, string stringInput)
+static void AddSequencesForTotal(List<(int Start, int End)> startAndEndIndex, string stringInput)
 {
     long total = 0;
-    for (int i = 0; i < startIndex.Length; i++)
-        total += long.Parse(stringInput.Substring(startIndex[i], endIndex[i] - startIndex[i] + 1));
+    foreach (var (Start, End) in startAndEndIndex)
+        total += long.Parse(stringInput.Substring(Start, End - Start + 1));
 
     Console.WriteLine($"\nTotal: {total}");
 }
