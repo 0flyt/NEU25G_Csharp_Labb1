@@ -4,9 +4,10 @@ string userInput = Console.ReadLine();
 List<(int, int)> startAndEndIndex = FindStartAndEndIndex(userInput);
 Print(startAndEndIndex, userInput);
 AddSequencesForTotal(startAndEndIndex, userInput);
+
 static List<(int, int)> FindStartAndEndIndex(string userInput)
 {
-    var indexes = new List<(int Start, int End)>();
+    List<(int, int)> indexes = new List<(int Start, int End)>();
 
     for (int i = 0; i < userInput.Length; i++)
     {
