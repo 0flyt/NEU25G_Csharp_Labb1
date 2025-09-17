@@ -24,12 +24,12 @@ static bool CorrectSequence(int start, int end, string stringInput)
     if (start < end && stringInput[start] == stringInput[end])
     {
         string sequence = stringInput.Substring(start, end - start + 1);
-        bool anyChar = sequence.Any(char.IsLetter);
+        bool anyDigit = sequence.All(char.IsDigit);
         bool containsSameNumber = sequence
             .Substring(1, sequence.Length - 2)
             .Contains(stringInput[start]);
 
-        if (!anyChar && !containsSameNumber)
+        if (anyDigit && !containsSameNumber)
             return true;
     }
     return false;
